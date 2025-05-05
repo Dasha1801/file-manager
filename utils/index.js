@@ -1,6 +1,7 @@
 import { mkdir } from "../commands/mkdir.js";
 import { add, cat, cp, mv, rm, rn } from "../commands/file.js";
 import { compress, decompress } from "../commands/zip.js";
+import { hash } from "../commands/hash.js";
 
 export const cliHandler = async (input) => {
   if (!input.trim()) return;
@@ -40,6 +41,9 @@ export const cliHandler = async (input) => {
           : decompress(source, dest));
         break;
       }
+      case "hash":
+        await hash(argString);
+        break;
       default:
         console.log(`Invalid command: ${command}`);
         return;
