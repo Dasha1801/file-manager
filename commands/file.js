@@ -4,7 +4,6 @@ import process from "process";
 
 const add = async (fileName) => {
   try {
-    if (!fileName) throw new Error("Filename is required");
     await fs.writeFile(path.resolve(process.cwd(), fileName), "", {
       encoding: "utf8",
       flag: "wx",
@@ -15,8 +14,6 @@ const add = async (fileName) => {
 };
 
 const cat = async (filePath) => {
-  if (!filePath) throw new Error("Filepath is required");
-
   const resolvedPath = path.isAbsolute(filePath)
     ? filePath
     : path.resolve(process.cwd(), filePath);
@@ -55,8 +52,6 @@ const cat = async (filePath) => {
 
 const cp = async (filePath, destDir) => {
   try {
-    if (!filePath || !destDir)
-      throw new Error("FilePath and destDir are required");
     const source = path.resolve(process.cwd(), filePath);
     const destination = path.resolve(
       process.cwd(),
@@ -81,7 +76,6 @@ const mv = async (filePath, dir) => {
   const destination = path.resolve(dir, path.basename(filePath));
 
   try {
-    if (!filePath || !dir) throw new Error("FilePath and dir are required");
     await fs.access(source);
     await fs.mkdir(path.dirname(destination), { recursive: true });
     await fs.rename(source, destination);

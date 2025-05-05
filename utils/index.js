@@ -3,6 +3,7 @@ import { add, cat, cp, mv, rm, rn } from "../commands/file.js";
 import { compress, decompress } from "../commands/zip.js";
 import { hash } from "../commands/hash.js";
 import { architecture, cpu, eol, homedir, username } from "../commands/os.js";
+import { cd, ls, up } from "../commands/navigation.js";
 
 export const cliHandler = async (input) => {
   if (!input.trim()) return;
@@ -57,8 +58,17 @@ export const cliHandler = async (input) => {
         } else if (args[0] === "--username") {
           username();
         } else {
-          console.log("Invalid data");
+          console.log("Invalid input");
         }
+        break;
+      case "ls":
+        await ls();
+        break;
+      case "up":
+        up();
+        break;
+      case "cd":
+        await cd(argString);
         break;
       default:
         console.log(`Invalid command: ${command}`);
@@ -67,6 +77,6 @@ export const cliHandler = async (input) => {
   } catch {
     console.log("Operation failed");
   } finally {
-    console.log(`Current directory: ${process.cwd()}`);
+    console.log(`You are currently in ${process.cwd()}`);
   }
 };
