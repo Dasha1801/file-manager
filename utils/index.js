@@ -2,6 +2,7 @@ import { mkdir } from "../commands/mkdir.js";
 import { add, cat, cp, mv, rm, rn } from "../commands/file.js";
 import { compress, decompress } from "../commands/zip.js";
 import { hash } from "../commands/hash.js";
+import { architecture, cpu, eol, homedir, username } from "../commands/os.js";
 
 export const cliHandler = async (input) => {
   if (!input.trim()) return;
@@ -43,6 +44,21 @@ export const cliHandler = async (input) => {
       }
       case "hash":
         await hash(argString);
+        break;
+      case "os":
+        if (args[0] === "--architecture") {
+          architecture();
+        } else if (args[0] === "--cpus") {
+          cpu();
+        } else if (args[0] === "--EOL") {
+          eol();
+        } else if (args[0] === "--homedir") {
+          homedir();
+        } else if (args[0] === "--username") {
+          username();
+        } else {
+          console.log("Invalid data");
+        }
         break;
       default:
         console.log(`Invalid command: ${command}`);
