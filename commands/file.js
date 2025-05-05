@@ -1,12 +1,16 @@
+import fs from "fs"; 
+import fsPromises from "fs/promises";
 import path from "path";
-import fs from "fs/promises";
 import process from "process";
+
+const { writeFile, stat, access, unlink, copyFile, mkdir, rename } = fsPromises;
 
 const add = async (fileName) => {
   try {
-    await fs.writeFile(path.resolve(process.cwd(), fileName), "", {
+    await writeFile(path.resolve(process.cwd(), fileName), "", {
       encoding: "utf8",
       flag: "wx",
+      mode: 0o666,
     });
   } catch {
     console.error("Operation failed");
@@ -19,7 +23,7 @@ const cat = async (filePath) => {
     : path.resolve(process.cwd(), filePath);
 
   try {
-    const stats = await fs.stat(resolvedPath);
+    const stats = await stat(resolvedPath);
     if (!stats.isFile()) {
       throw new Error(`Path ${resolvedPath} is not a file`);
     }
@@ -45,7 +49,7 @@ const cat = async (filePath) => {
       });
     });
   } catch (err) {
-    console.error(`Operation failed for:` + err.message);
+    console.error(`Operation failed for: ${err.message}`);
     throw err;
   }
 };
@@ -59,11 +63,11 @@ const cp = async (filePath, destDir) => {
       path.basename(filePath)
     );
 
-    const stats = await fs.stat(source);
+    const stats = await stat(source);
     if (!stats.isFile()) throw new Error("Source is not a file");
 
-    await fs.mkdir(path.dirname(destination), { recursive: true });
-    await fs.copyFile(source, destination, fs.constants.COPYFILE_EXCL);
+    await mkdir(path.dirname(destination), { recursive: true });
+    await copyFile(source, destination, fs.constants.COPYFILE_EXCL);
 
     console.log(`Copied ${filePath} to ${destination}`);
   } catch (err) {
@@ -76,9 +80,9 @@ const mv = async (filePath, dir) => {
   const destination = path.resolve(dir, path.basename(filePath));
 
   try {
-    await fs.access(source);
-    await fs.mkdir(path.dirname(destination), { recursive: true });
-    await fs.rename(source, destination);
+    await access(source);
+    await mkdir(path.dirname(destination), { recursive: true });
+    await rename(source, destination);
   } catch {
     throw new Error("Operation failed");
   }
@@ -91,12 +95,12 @@ const rm = async (filePath) => {
 
   const resolvedPath = path.resolve(process.cwd(), filePath);
   try {
-    const stats = await fs.stat(resolvedPath);
+    const stats = await stat(resolvedPath);
     if (!stats.isFile()) {
       throw new Error("Cannot delete - target is not a file");
     }
 
-    await fs.unlink(resolvedPath);
+    await unlink(resolvedPath);
   } catch {
     throw new Error("Operation failed");
   }
@@ -109,7 +113,7 @@ const rn = async (oldPath, newName) => {
 
     const currentPath = path.resolve(oldPath);
     const newPath = path.join(path.dirname(currentPath), newName);
-    await fs.rename(currentPath, newPath);
+    await rename(currentPath, newPath);
   } catch {
     console.error("Operation failed");
   }
