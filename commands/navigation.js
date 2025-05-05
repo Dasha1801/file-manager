@@ -1,28 +1,29 @@
 import process from "process";
 import path from "path";
 import fs from "fs/promises";
+import os from "os";
 
 const cd = async (targetPath) => {
   try {
     const resolvedPath = path.resolve(process.cwd(), targetPath);
 
-    const stats = await fs.promises.stat(resolvedPath);
+    const stats = await fs.stat(resolvedPath);
     if (!stats.isDirectory()) {
-      throw new Error(`"${targetPath}" is not a directory`);
+      throw new Error(`${targetPath} is not a directory`);
     }
 
     process.chdir(resolvedPath);
-  } catch {
+    console.log(`Current directory: ${process.cwd()}`);
+  } catch (err) {
     console.error("Operation failed");
+    console.error(err.message);
   }
 };
 
 const ls = async () => {
   try {
     const currentDir = process.cwd();
-    const items = await fs.promises.readdir(currentDir, {
-      withFileTypes: true,
-    });
+    const items = await fs.readdir(currentDir, { withFileTypes: true });
 
     const directories = items
       .filter((item) => item.isDirectory())
@@ -47,8 +48,9 @@ const ls = async () => {
 
     console.log(`\nContents of ${currentDir}:\n`);
     console.table(result);
-  } catch {
+  } catch (err) {
     console.error("Operation failed");
+    console.error(err.message);
   }
 };
 
@@ -56,11 +58,16 @@ const up = () => {
   try {
     const parentDir = path.resolve(process.cwd(), "..");
 
-    if (path.relative(os.homedir(), parentDir).startsWith("..")) return;
+    if (parentDir === os.homedir()) {
+      console.log("Cannot go above home directory");
+      return;
+    }
 
     process.chdir(parentDir);
-  } catch {
+    console.log(`Current directory: ${process.cwd()}`);
+  } catch (err) {
     console.error("Operation failed");
+    console.error(err.message);
   }
 };
 
