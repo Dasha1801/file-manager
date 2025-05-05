@@ -1,5 +1,6 @@
 import { mkdir } from "../commands/mkdir.js";
 import { add, cat, cp, mv, rm, rn } from "../commands/file.js";
+import { compress, decompress } from "../commands/zip.js";
 
 export const cliHandler = async (input) => {
   if (!input.trim()) return;
@@ -31,6 +32,14 @@ export const cliHandler = async (input) => {
         if (args.length < 2) throw new Error("Usage: rn <oldPath> <newName>");
         await rn(args[0], args[1]);
         break;
+      case "compress":
+      case "decompress": {
+        const [source, dest] = args;
+        await (command === "compress"
+          ? compress(source, dest)
+          : decompress(source, dest));
+        break;
+      }
       default:
         console.log(`Invalid command: ${command}`);
         return;
