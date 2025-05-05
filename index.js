@@ -1,6 +1,7 @@
 import os from "os";
 import process from "process";
 import readline from "readline";
+import { cliHandler } from "./utils/index.js";
 
 const allArgs = process.argv.slice(2);
 const usernameMatch = allArgs.find((arg) => /^--username=/.test(arg));
@@ -26,6 +27,8 @@ cli.on("line", async (line) => {
     cli.close();
     return;
   }
+
+  await cliHandler(line);
 
   cli.prompt();
 });
